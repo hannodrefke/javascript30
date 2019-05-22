@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Search NFL Players</title>
+  </head>
+  <body>
+    <input type="text" class="search" placeholder="Search NFL player" />
+    <ul class="suggestions"></ul>
+  </body>
+  <script>
+    const url = 'https://raw.githubusercontent.com/BurntSushi/nflgame/master/nflgame/players.json';
+    let playerData = [];
+    fetch(url).then(blob => blob.json().then(data => { for (key in data) { playerData.push(data[key]); } }));
+    
+    function getPlayers(query, players) {
+      return players.filter(player => {
+        const regex = new RegExp(query, 'gi');
+        return player.full_name.match(regex) || player.college.match(regex);
+      });
+    }
+
+    function displayMatches() {
+      const matchPlayers = getPlayers(this.value, playerData);
+      const htmlResult = matchPlayers.map(player => {
+        return `<li>${player.full_name}</li>`;
+      }).join('');
+      suggestions.innerHTML = htmlResult;
+    }
+
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+    
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', displayMatches);
+  </script>
+</html>
